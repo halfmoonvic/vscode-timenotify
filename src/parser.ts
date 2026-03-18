@@ -71,14 +71,14 @@ function parseTimeRule(input: string): TimeRule {
     throw new Error("time is required");
   }
 
-  const parts = value.split(":").map((part) => part.trim());
-  if (parts.length < 1 || parts.length > 3) {
-    throw new Error(`invalid time format: ${input}`);
+  const match = /^(\d{2}):(\d{2}):(\d{2})$/.exec(value);
+  if (!match) {
+    throw new Error("time must use HH:mm:ss format");
   }
 
-  const hour = parseIntStrict(parts[0], "hour");
-  const minute = parts.length >= 2 ? parseIntStrict(parts[1], "minute") : 0;
-  const second = parts.length === 3 ? parseIntStrict(parts[2], "second") : 0;
+  const hour = parseIntStrict(match[1], "hour");
+  const minute = parseIntStrict(match[2], "minute");
+  const second = parseIntStrict(match[3], "second");
 
   if (hour < 0 || hour > 23) {
     throw new Error(`hour out of range: ${hour}`);

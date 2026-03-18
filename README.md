@@ -27,12 +27,12 @@ TimeNotify for VS Code provides:
     {
       "title": "Birthday",
       "date": "12/25",
-      "time": "09:00"
+      "time": "09:00:00"
     },
     {
       "title": "Pay rent",
       "date": "1",
-      "time": "08"
+      "time": "08:00:00"
     }
   ]
 }
@@ -45,9 +45,7 @@ TimeNotify for VS Code provides:
 - `Mon..Sun` weekday recurring
 
 ## Time rules
-- `H`
-- `H:M`
-- `H:M:S`
+- `HH:mm:ss`
 
 ## Development
 

@@ -80,7 +80,8 @@
               },
               "time": {
                 "type": "string",
-                "description": "Supports H, H:M, H:M:S."
+                "pattern": "^\\d{2}:\\d{2}:\\d{2}$",
+                "description": "Must use HH:mm:ss."
               },
               "advanceMinutes": {
                 "type": "number",
