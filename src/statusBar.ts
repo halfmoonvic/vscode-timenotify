@@ -1,19 +1,6 @@
 import * as vscode from "vscode";
 import { StatusBarAlignmentSetting } from "./types";
-
-function pad2(value: number): string {
-  return value.toString().padStart(2, "0");
-}
-
-export function formatClock(date: Date, format: string): string {
-  return format
-    .replace(/YYYY/g, String(date.getFullYear()))
-    .replace(/MM/g, pad2(date.getMonth() + 1))
-    .replace(/DD/g, pad2(date.getDate()))
-    .replace(/HH/g, pad2(date.getHours()))
-    .replace(/mm/g, pad2(date.getMinutes()))
-    .replace(/ss/g, pad2(date.getSeconds()));
-}
+import { formatClock } from "./clockFormat";
 
 export class StatusBarClock implements vscode.Disposable {
   private item: vscode.StatusBarItem;

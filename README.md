@@ -47,6 +47,17 @@ TimeNotify for VS Code provides:
 ## Time rules
 - `HH:mm:ss`
 
+## Clock format tokens
+- `YYYY` year
+- `MM` month
+- `DD` day
+- `HH` 24-hour clock
+- `hh` 12-hour clock
+- `mm` minutes
+- `ss` seconds
+- `A` uppercase meridiem (`AM` / `PM`)
+- `a` lowercase meridiem (`am` / `pm`)
+
 ## Development
 
 ```bash
