@@ -10,11 +10,71 @@ const WEEKDAYS: Record<string, number> = {
   sat: 6
 };
 
+const WEEKDAY_ALIASES: Record<string, number[]> = {
+  workdays: [1, 2, 3, 4, 5],
+  weekends: [0, 6]
+};
+
 function parseIntStrict(value: string, label: string): number {
   if (!/^\d+$/.test(value)) {
     throw new Error(`invalid ${label}: ${value}`);
   }
   return Number.parseInt(value, 10);
+}
+
+function uniqueSorted(values: number[]): number[] {
+  return [...new Set(values)].sort((left, right) => left - right);
+}
+
+function parseWeekdayToken(input: string): number {
+  const normalized = input.trim().toLowerCase();
+  const weekday = WEEKDAYS[normalized];
+  if (weekday === undefined) {
+    throw new Error(`invalid weekday: ${input.trim()}`);
+  }
+  return weekday;
+}
+
+function expandWeekdayRange(segment: string): number[] {
+  const parts = segment.split("-");
+  if (parts.length !== 2) {
+    throw new Error(`invalid weekday expression: ${segment}`);
+  }
+
+  const start = parseWeekdayToken(parts[0]);
+  const end = parseWeekdayToken(parts[1]);
+  if (start > end) {
+    throw new Error(`weekday range must be ascending: ${segment.trim()}`);
+  }
+
+  const weekdays: number[] = [];
+  for (let weekday = start; weekday <= end; weekday += 1) {
+    weekdays.push(weekday);
+  }
+  return weekdays;
+}
+
+function parseWeekdayExpression(input: string): number[] {
+  const normalized = input.trim();
+  const alias = WEEKDAY_ALIASES[normalized.toLowerCase()];
+  if (alias) {
+    return alias;
+  }
+
+  const segments = normalized.split(",");
+  if (segments.some((segment) => segment.trim() === "")) {
+    throw new Error(`invalid weekday expression: ${normalized}`);
+  }
+
+  const weekdays = segments.flatMap((segment) => {
+    const trimmed = segment.trim();
+    if (trimmed.includes("-")) {
+      return expandWeekdayRange(trimmed);
+    }
+    return [parseWeekdayToken(trimmed)];
+  });
+
+  return uniqueSorted(weekdays);
 }
 
 function parseDateRule(input: string): DateRule {
@@ -23,9 +83,12 @@ function parseDateRule(input: string): DateRule {
     throw new Error("date is required");
   }
 
-  const weekday = WEEKDAYS[value.toLowerCase()];
-  if (weekday !== undefined) {
-    return { kind: "weekday", weekday };
+  if (
+    WEEKDAY_ALIASES[value.toLowerCase()] ||
+    value.includes(",") ||
+    /[A-Za-z]/.test(value)
+  ) {
+    return { kind: "weekdays", weekdays: parseWeekdayExpression(value) };
   }
 
   if (!value.includes("/")) {
@@ -143,7 +206,7 @@ export function isDateMatch(rule: DateRule, value: Date): boolean {
       return rule.month === month && rule.day === day;
     case "monthly":
       return rule.day === day;
-    case "weekday":
-      return rule.weekday === weekday;
+    case "weekdays":
+      return rule.weekdays.includes(weekday);
   }
 }

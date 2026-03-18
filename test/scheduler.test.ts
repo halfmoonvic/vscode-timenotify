@@ -33,3 +33,17 @@ test("scheduler dedupes within configured window", () => {
 
   assert.equal(hits.length, 1);
 });
+
+test("scheduler triggers workdays events on matching weekdays", () => {
+  const event = compileEvent({ title: "Standup", date: "workdays", time: "09:00:00" }, 0);
+  const hits: string[] = [];
+  const scheduler = new Scheduler({
+    intervalSeconds: 1,
+    dedupeSeconds: 300,
+    events: [event],
+    onTrigger: () => hits.push("x")
+  });
+
+  scheduler.tick(new Date(2026, 2, 18, 9, 0, 0));
+  assert.equal(hits.length, 1);
+});

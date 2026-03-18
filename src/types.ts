@@ -23,7 +23,7 @@ export type DateRule =
   | { kind: "exact"; year: number; month: number; day: number }
   | { kind: "yearly"; month: number; day: number }
   | { kind: "monthly"; day: number }
-  | { kind: "weekday"; weekday: number };
+  | { kind: "weekdays"; weekdays: number[] };
 
 export interface TimeRule {
   hour: number;
