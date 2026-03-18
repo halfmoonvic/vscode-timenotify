@@ -96,7 +96,7 @@
   "scripts": {
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
-    "test": "npm run compile && node --test dist/test"
+    "test": "npm run compile && node --test \"dist/test/**/*.test.js\""
   },
   "devDependencies": {
     "@types/node": "^20.16.5",

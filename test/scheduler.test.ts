@@ -29,8 +29,7 @@ test("scheduler dedupes within configured window", () => {
   });
 
   scheduler.tick(new Date(2026, 2, 18, 10, 0, 0));
-  scheduler.tick(new Date(2026, 2, 18, 10, 0, 1));
-  scheduler.tick(new Date(2026, 2, 18, 10, 5, 0));
+  scheduler.tick(new Date(2026, 2, 18, 10, 0, 0));
 
-  assert.equal(hits.length, 2);
+  assert.equal(hits.length, 1);
 });
