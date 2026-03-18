@@ -19,3 +19,15 @@ test("formatClock supports 12-hour format with lowercase meridiem", () => {
   const noon = new Date(2026, 2, 18, 12, 30, 45);
   assert.equal(formatClock(noon, "hh:mm:ss a"), "12:30:45 pm");
 });
+
+test("formatClock supports short and long weekday tokens", () => {
+  const date = new Date(2026, 2, 18, 23, 5, 7);
+  assert.equal(formatClock(date, "ddd"), "Wed");
+  assert.equal(formatClock(date, "dddd"), "Wednesday");
+});
+
+test("formatClock supports mixed weekday and time tokens", () => {
+  const date = new Date(2026, 2, 18, 23, 5, 7);
+  assert.equal(formatClock(date, "YYYY-MM-DD ddd HH:mm:ss"), "2026-03-18 Wed 23:05:07");
+  assert.equal(formatClock(date, "dddd hh:mm:ss A"), "Wednesday 11:05:07 PM");
+});

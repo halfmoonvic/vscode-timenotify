@@ -57,6 +57,8 @@ TimeNotify for VS Code provides:
 - `ss` seconds
 - `A` uppercase meridiem (`AM` / `PM`)
 - `a` lowercase meridiem (`am` / `pm`)
+- `ddd` weekday short name
+- `dddd` weekday full name
 
 ## Development
 
