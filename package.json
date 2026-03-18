@@ -10,7 +10,7 @@
   "categories": [
     "Other"
   ],
-  "main": "./dist/extension.js",
+  "main": "./dist/src/extension.js",
   "activationEvents": [
     "onStartupFinished",
     "onCommand:timenotify.showNow"
