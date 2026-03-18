@@ -1,0 +1,106 @@
+{
+  "name": "vscode-timenotify",
+  "displayName": "TimeNotify",
+  "description": "Status bar clock and scheduled reminders for VS Code.",
+  "version": "0.0.1",
+  "publisher": "local",
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "main": "./dist/extension.js",
+  "activationEvents": [
+    "onStartupFinished",
+    "onCommand:timenotify.showNow"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "timenotify.showNow",
+        "title": "TimeNotify: Show Current Time"
+      }
+    ],
+    "configuration": {
+      "title": "TimeNotify",
+      "properties": {
+        "timenotify.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable TimeNotify reminders."
+        },
+        "timenotify.clockFormat": {
+          "type": "string",
+          "default": "HH:mm:ss",
+          "description": "Status bar clock format."
+        },
+        "timenotify.pollIntervalSeconds": {
+          "type": "number",
+          "default": 1,
+          "minimum": 1,
+          "maximum": 60,
+          "description": "Polling interval for reminder checks."
+        },
+        "timenotify.statusBarAlignment": {
+          "type": "string",
+          "enum": ["left", "right"],
+          "default": "right",
+          "description": "Status bar alignment for the clock."
+        },
+        "timenotify.dedupeSeconds": {
+          "type": "number",
+          "default": 300,
+          "minimum": 0,
+          "description": "Suppress duplicate reminders for the same event within this window."
+        },
+        "timenotify.notificationLevel": {
+          "type": "string",
+          "enum": ["info", "warning"],
+          "default": "info",
+          "description": "Notification level for reminders."
+        },
+        "timenotify.events": {
+          "type": "array",
+          "default": [],
+          "description": "Reminder events.",
+          "items": {
+            "type": "object",
+            "required": ["title", "date", "time"],
+            "properties": {
+              "title": {
+                "type": "string"
+              },
+              "message": {
+                "type": "string"
+              },
+              "date": {
+                "type": "string",
+                "description": "Supports YYYY/MM/DD, MM/DD, DD, Mon..Sun."
+              },
+              "time": {
+                "type": "string",
+                "description": "Supports H, H:M, H:M:S."
+              },
+              "advanceMinutes": {
+                "type": "number",
+                "default": 0,
+                "minimum": 0
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "test": "npm run compile && node --test dist/test"
+  },
+  "devDependencies": {
+    "@types/node": "^20.16.5",
+    "@types/vscode": "^1.90.0",
+    "typescript": "^5.6.2"
+  }
+}
