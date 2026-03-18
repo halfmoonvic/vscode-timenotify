@@ -20,7 +20,7 @@ TimeNotify for VS Code provides:
     {
       "title": "Standup",
       "message": "Daily sync starts now",
-      "date": "Mon",
+      "date": "workdays",
       "time": "10:00:00",
       "advanceMinutes": 5
     },
@@ -33,6 +33,11 @@ TimeNotify for VS Code provides:
       "title": "Pay rent",
       "date": "1",
       "time": "08:00:00"
+    },
+    {
+      "title": "Gym",
+      "date": "Mon,Wed,Fri",
+      "time": "18:30:00"
     }
   ]
 }
@@ -42,7 +47,12 @@ TimeNotify for VS Code provides:
 - `YYYY/MM/DD` exact date
 - `MM/DD` yearly recurring
 - `DD` monthly recurring
-- `Mon..Sun` weekday recurring
+- `Mon` single weekday
+- `Mon-Fri` weekday range
+- `Mon,Wed,Fri` weekday list
+- `Mon-Fri,Sun` mixed weekday range and list
+- `workdays` alias for `Mon-Fri`
+- `weekends` alias for `Sat,Sun`
 
 ## Time rules
 - `HH:mm:ss`

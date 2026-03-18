@@ -76,7 +76,7 @@
               },
               "date": {
                 "type": "string",
-                "description": "Supports YYYY/MM/DD, MM/DD, DD, Mon..Sun."
+                "description": "Supports YYYY/MM/DD, MM/DD, DD, Mon, Mon-Fri, Mon,Wed,Fri, workdays, weekends."
               },
               "time": {
                 "type": "string",
