@@ -4,11 +4,20 @@
   "description": "Status bar clock and scheduled reminders for VS Code.",
   "version": "0.0.1",
   "publisher": "local",
+  "license": "UNLICENSED",
   "engines": {
     "vscode": "^1.90.0"
   },
   "categories": [
-    "Other"
+    "Other",
+    "Productivity"
+  ],
+  "keywords": [
+    "time",
+    "clock",
+    "reminder",
+    "notification",
+    "productivity"
   ],
   "main": "./dist/src/extension.js",
   "activationEvents": [
@@ -97,11 +106,13 @@
   "scripts": {
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
-    "test": "npm run compile && node --test \"dist/test/**/*.test.js\""
+    "test": "npm run compile && node --test \"dist/test/**/*.test.js\"",
+    "package:vsix": "npm run test && vsce package"
   },
   "devDependencies": {
     "@types/node": "^20.16.5",
     "@types/vscode": "^1.90.0",
+    "@vscode/vsce": "^3.6.0",
     "typescript": "^5.6.2"
   }
 }
