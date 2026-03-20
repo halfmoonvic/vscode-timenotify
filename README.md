@@ -61,10 +61,14 @@ TimeNotify for VS Code provides:
 - `DD` monthly recurring
 - `Mon` single weekday
 - `Mon-Fri` weekday range
+- `Mon-Sun` full week, equivalent to every day
+- `Fri-Mon` wrapped weekday range across week boundaries
 - `Mon,Wed,Fri` weekday list
 - `Mon-Fri,Sun` mixed weekday range and list
 - `workdays` alias for `Mon-Fri`
 - `weekends` alias for `Sat,Sun`
+
+Weekday ranges are circular, so ranges that cross Sunday are valid.
 
 ## Time rules
 - `HH:mm:ss`

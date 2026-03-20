@@ -91,7 +91,7 @@
               },
               "date": {
                 "type": "string",
-                "description": "Supports YYYY/MM/DD, MM/DD, DD, Mon, Mon-Fri, Mon,Wed,Fri, workdays, weekends."
+                "description": "Supports YYYY/MM/DD, MM/DD, DD, Mon, Mon-Fri, Mon-Sun, Fri-Mon, Mon,Wed,Fri, workdays, weekends."
               },
               "time": {
                 "type": "string",

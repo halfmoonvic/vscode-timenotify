@@ -48,13 +48,14 @@ function expandWeekdayRange(segment: string): number[] {
 
   const start = parseWeekdayToken(parts[0]);
   const end = parseWeekdayToken(parts[1]);
-  if (start > end) {
-    throw new Error(`weekday range must be ascending: ${segment.trim()}`);
-  }
-
   const weekdays: number[] = [];
-  for (let weekday = start; weekday <= end; weekday += 1) {
+  let weekday = start;
+  while (true) {
     weekdays.push(weekday);
+    if (weekday === end) {
+      break;
+    }
+    weekday = (weekday + 1) % 7;
   }
   return weekdays;
 }

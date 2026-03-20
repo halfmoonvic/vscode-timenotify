@@ -23,25 +23,35 @@ test("compileEvent parses a single weekday into unified weekdays model", () => {
 
 test("compileEvent parses weekday ranges lists and aliases", () => {
   const rangeEvent = compileEvent({ title: "Range", date: "Mon-Fri", time: "08:00:00" }, 0);
+  const fullWeekEvent = compileEvent(
+    { title: "FullWeek", date: "Mon-Sun", time: "08:00:00" },
+    1
+  );
   const listEvent = compileEvent(
     { title: "List", date: "Mon,Wed,Fri", time: "08:00:00" },
-    1
+    2
+  );
+  const wrappedRangeEvent = compileEvent(
+    { title: "Wrapped", date: "Thu-Mon", time: "08:00:00" },
+    3
   );
   const mixedEvent = compileEvent(
     { title: "Mixed", date: "Mon-Fri,Sun", time: "08:00:00" },
-    2
+    4
   );
   const aliasEvent = compileEvent(
     { title: "Alias", date: "workdays", time: "08:00:00" },
-    3
+    5
   );
   const weekendEvent = compileEvent(
     { title: "Weekend", date: "weekends", time: "08:00:00" },
-    4
+    6
   );
 
   assert.deepEqual(rangeEvent.dateRule, { kind: "weekdays", weekdays: [1, 2, 3, 4, 5] });
+  assert.deepEqual(fullWeekEvent.dateRule, { kind: "weekdays", weekdays: [0, 1, 2, 3, 4, 5, 6] });
   assert.deepEqual(listEvent.dateRule, { kind: "weekdays", weekdays: [1, 3, 5] });
+  assert.deepEqual(wrappedRangeEvent.dateRule, { kind: "weekdays", weekdays: [0, 1, 4, 5, 6] });
   assert.deepEqual(mixedEvent.dateRule, { kind: "weekdays", weekdays: [0, 1, 2, 3, 4, 5] });
   assert.deepEqual(aliasEvent.dateRule, { kind: "weekdays", weekdays: [1, 2, 3, 4, 5] });
   assert.deepEqual(weekendEvent.dateRule, { kind: "weekdays", weekdays: [0, 6] });
@@ -104,9 +114,6 @@ test("compileEvent rejects out of range strict time parts", () => {
 });
 
 test("compileEvent rejects invalid weekday expressions", () => {
-  assert.throws(() => compileEvent({ title: "Bad", date: "Fri-Mon", time: "08:00:00" }, 0), {
-    message: "weekday range must be ascending: Fri-Mon"
-  });
   assert.throws(() => compileEvent({ title: "Bad", date: "Mon,,Wed", time: "08:00:00" }, 0), {
     message: "invalid weekday expression: Mon,,Wed"
   });
