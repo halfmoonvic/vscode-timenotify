@@ -1,11 +1,14 @@
 .git/**
 .github/**
 .vscode/**
+.claude/**
 src/**
 test/**
 node_modules/**
 *.ts
 tsconfig.json
 .editorconfig
+AGENTS.md
+CLAUDE.md
 dist/test/**
 dist/**/*.map
