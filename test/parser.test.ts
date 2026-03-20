@@ -12,6 +12,8 @@ test("compileEvent parses yearly date with strict HH:mm:ss time", () => {
   assert.equal(event.timeRule.minute, 30);
   assert.equal(event.timeRule.second, 0);
   assert.equal(event.advanceMinutes, 15);
+  assert.equal(event.notificationMode, "toast");
+  assert.equal(event.snoozeMinutes, 10);
 });
 
 test("compileEvent parses a single weekday into unified weekdays model", () => {
@@ -60,10 +62,33 @@ test("compileEvent rejects non-HH:mm:ss time formats", () => {
 test("compileEvents captures invalid entries", () => {
   const result = compileEvents([
     { title: "ok", date: "1", time: "10:00:00" },
-    { title: "bad", date: "13/40", time: "99" }
+    { title: "bad", date: "13/40", time: "99" },
+    { title: "neg", date: "3/18", time: "10:00:00", snoozeMinutes: -1 }
   ]);
   assert.equal(result.compiled.length, 1);
-  assert.equal(result.errors.length, 1);
+  assert.equal(result.errors.length, 2);
+});
+
+test("compileEvents applies global defaults and event overrides", () => {
+  const result = compileEvents(
+    [
+      { title: "Defaulted", date: "3/18", time: "10:00:00" },
+      {
+        title: "Override",
+        date: "3/18",
+        time: "11:00:00",
+        notificationMode: "modal",
+        snoozeMinutes: 0
+      }
+    ],
+    { notificationMode: "modal", snoozeMinutes: 15 }
+  );
+
+  assert.equal(result.errors.length, 0);
+  assert.equal(result.compiled[0].notificationMode, "modal");
+  assert.equal(result.compiled[0].snoozeMinutes, 15);
+  assert.equal(result.compiled[1].notificationMode, "modal");
+  assert.equal(result.compiled[1].snoozeMinutes, 0);
 });
 
 test("compileEvent rejects out of range strict time parts", () => {

@@ -1,14 +1,16 @@
 import * as vscode from "vscode";
-import { NotificationLevel } from "./types";
+import { CompiledEvent } from "./types";
+
+export const SNOOZE_ACTION = "Snooze";
 
 export class Notifier {
-  constructor(private readonly level: NotificationLevel) {}
+  notify(event: CompiledEvent): Thenable<string | undefined> {
+    const text = event.message ? `${event.title}: ${event.message}` : event.title;
+    const actions = event.snoozeMinutes > 0 ? [SNOOZE_ACTION] : [];
 
-  notify(title: string, message?: string): Thenable<string | undefined> {
-    const text = message ? `${title}: ${message}` : title;
-    if (this.level === "warning") {
-      return vscode.window.showWarningMessage(text);
+    if (event.notificationMode === "modal") {
+      return vscode.window.showInformationMessage(text, { modal: true }, ...actions);
     }
-    return vscode.window.showInformationMessage(text);
+    return vscode.window.showInformationMessage(text, ...actions);
   }
 }

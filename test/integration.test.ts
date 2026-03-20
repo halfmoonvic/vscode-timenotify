@@ -10,11 +10,18 @@ test("integration: compiled events are consumed by scheduler", () => {
       date: "3/18",
       time: "10:30:00",
       advanceMinutes: 10,
-      message: "Meeting in 10 minutes"
+      message: "Meeting in 10 minutes",
+      notificationMode: "modal",
+      snoozeMinutes: 5
     }
-  ]);
+  ], {
+    notificationMode: "toast",
+    snoozeMinutes: 10
+  });
 
   assert.equal(errors.length, 0);
+  assert.equal(compiled[0].notificationMode, "modal");
+  assert.equal(compiled[0].snoozeMinutes, 5);
   const hits: string[] = [];
 
   const scheduler = new Scheduler({

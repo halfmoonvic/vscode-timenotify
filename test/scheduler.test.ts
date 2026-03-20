@@ -47,3 +47,21 @@ test("scheduler triggers workdays events on matching weekdays", () => {
   scheduler.tick(new Date(2026, 2, 18, 9, 0, 0));
   assert.equal(hits.length, 1);
 });
+
+test("scheduler triggers snoozed reminders independently of recurring dedupe", () => {
+  const event = compileEvent({ title: "Break", date: "3/18", time: "10:00:00" }, 0);
+  const hits: string[] = [];
+  const scheduler = new Scheduler({
+    intervalSeconds: 1,
+    dedupeSeconds: 300,
+    events: [event],
+    onTrigger: () => hits.push("x")
+  });
+
+  const first = new Date(2026, 2, 18, 10, 0, 0);
+  scheduler.tick(first);
+  scheduler.scheduleSnooze(event, 10, first);
+  scheduler.tick(new Date(2026, 2, 18, 10, 10, 0));
+
+  assert.equal(hits.length, 2);
+});

@@ -8,6 +8,12 @@ export interface SchedulerOptions {
   onTrigger: (event: CompiledEvent, now: Date) => void;
 }
 
+interface SnoozedTrigger {
+  id: string;
+  event: CompiledEvent;
+  triggerAtSec: number;
+}
+
 function toSecondPrecision(date: Date): number {
   return Math.floor(date.getTime() / 1000);
 }
@@ -27,12 +33,15 @@ export function shouldTriggerAt(event: CompiledEvent, now: Date): boolean {
 export class Scheduler {
   private timer: NodeJS.Timeout | undefined;
   private readonly lastTriggeredAt = new Map<string, number>();
+  private readonly snoozedTriggers: SnoozedTrigger[] = [];
+  private nextSnoozeId = 0;
 
   constructor(private options: SchedulerOptions) {}
 
   updateOptions(options: SchedulerOptions): void {
     this.options = options;
     this.lastTriggeredAt.clear();
+    this.snoozedTriggers.length = 0;
   }
 
   start(): void {
@@ -51,20 +60,59 @@ export class Scheduler {
 
   tick(now = new Date()): void {
     const nowSec = toSecondPrecision(now);
+    this.triggerSnoozed(now, nowSec);
     for (const event of this.options.events) {
-      if (!shouldTriggerAt(event, now)) {
+      if (!shouldTriggerAt(event, now) || this.shouldSkipTrigger(event.id, nowSec)) {
         continue;
       }
-      const last = this.lastTriggeredAt.get(event.id);
-      if (
-        last !== undefined &&
-        this.options.dedupeSeconds > 0 &&
-        nowSec - last < this.options.dedupeSeconds
-      ) {
-        continue;
-      }
-      this.lastTriggeredAt.set(event.id, nowSec);
+      this.markTriggered(event.id, nowSec);
       this.options.onTrigger(event, now);
     }
+  }
+
+  scheduleSnooze(event: CompiledEvent, minutes: number, now = new Date()): void {
+    if (minutes <= 0) {
+      return;
+    }
+    this.nextSnoozeId += 1;
+    this.snoozedTriggers.push({
+      id: `${event.id}@snooze:${this.nextSnoozeId}`,
+      event,
+      triggerAtSec: toSecondPrecision(new Date(now.getTime() + minutes * 60_000))
+    });
+  }
+
+  private triggerSnoozed(now: Date, nowSec: number): void {
+    const ready = this.snoozedTriggers.filter((trigger) => trigger.triggerAtSec <= nowSec);
+    if (ready.length === 0) {
+      return;
+    }
+
+    this.snoozedTriggers.splice(
+      0,
+      this.snoozedTriggers.length,
+      ...this.snoozedTriggers.filter((trigger) => trigger.triggerAtSec > nowSec)
+    );
+
+    for (const trigger of ready) {
+      if (this.shouldSkipTrigger(trigger.id, nowSec)) {
+        continue;
+      }
+      this.markTriggered(trigger.id, nowSec);
+      this.options.onTrigger(trigger.event, now);
+    }
+  }
+
+  private shouldSkipTrigger(id: string, nowSec: number): boolean {
+    const last = this.lastTriggeredAt.get(id);
+    return (
+      last !== undefined &&
+      this.options.dedupeSeconds > 0 &&
+      nowSec - last < this.options.dedupeSeconds
+    );
+  }
+
+  private markTriggered(id: string, nowSec: number): void {
+    this.lastTriggeredAt.set(id, nowSec);
   }
 }

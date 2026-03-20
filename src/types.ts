@@ -1,5 +1,5 @@
 export type StatusBarAlignmentSetting = "left" | "right";
-export type NotificationLevel = "info" | "warning";
+export type NotificationMode = "toast" | "modal";
 
 export interface EventConfig {
   title: string;
@@ -7,6 +7,8 @@ export interface EventConfig {
   date: string;
   time: string;
   advanceMinutes?: number;
+  notificationMode?: NotificationMode;
+  snoozeMinutes?: number;
 }
 
 export interface TimeNotifyConfig {
@@ -15,7 +17,8 @@ export interface TimeNotifyConfig {
   pollIntervalSeconds: number;
   statusBarAlignment: StatusBarAlignmentSetting;
   dedupeSeconds: number;
-  notificationLevel: NotificationLevel;
+  notificationMode: NotificationMode;
+  snoozeMinutes: number;
   events: EventConfig[];
 }
 
@@ -38,4 +41,6 @@ export interface CompiledEvent {
   dateRule: DateRule;
   timeRule: TimeRule;
   advanceMinutes: number;
+  notificationMode: NotificationMode;
+  snoozeMinutes: number;
 }

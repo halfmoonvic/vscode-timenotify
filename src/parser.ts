@@ -1,4 +1,9 @@
-import { CompiledEvent, DateRule, EventConfig, TimeRule } from "./types";
+import { CompiledEvent, DateRule, EventConfig, NotificationMode, TimeRule } from "./types";
+
+export interface EventDefaults {
+  notificationMode: NotificationMode;
+  snoozeMinutes: number;
+}
 
 const WEEKDAYS: Record<string, number> = {
   sun: 0,
@@ -167,23 +172,44 @@ export function compileEvent(event: EventConfig, index: number): CompiledEvent {
     throw new Error(`advanceMinutes must be >= 0: ${advanceMinutesRaw}`);
   }
 
+  const notificationMode =
+    event.notificationMode === "modal" ? "modal" : event.notificationMode === "toast" ? "toast" : "toast";
+  const snoozeMinutesRaw = event.snoozeMinutes ?? 10;
+  if (!Number.isFinite(snoozeMinutesRaw) || snoozeMinutesRaw < 0) {
+    throw new Error(`snoozeMinutes must be >= 0: ${snoozeMinutesRaw}`);
+  }
+
   return {
     id: `${index}:${title}`,
     title,
     message: event.message,
     dateRule: parseDateRule(event.date),
     timeRule: parseTimeRule(event.time),
-    advanceMinutes: Math.floor(advanceMinutesRaw)
+    advanceMinutes: Math.floor(advanceMinutesRaw),
+    notificationMode,
+    snoozeMinutes: Math.floor(snoozeMinutesRaw)
   };
 }
 
-export function compileEvents(events: EventConfig[]): { compiled: CompiledEvent[]; errors: string[] } {
+export function compileEvents(
+  events: EventConfig[],
+  defaults: EventDefaults = { notificationMode: "toast", snoozeMinutes: 10 }
+): { compiled: CompiledEvent[]; errors: string[] } {
   const compiled: CompiledEvent[] = [];
   const errors: string[] = [];
 
   events.forEach((event, index) => {
     try {
-      compiled.push(compileEvent(event, index));
+      compiled.push(
+        compileEvent(
+          {
+            ...event,
+            notificationMode: event.notificationMode ?? defaults.notificationMode,
+            snoozeMinutes: event.snoozeMinutes ?? defaults.snoozeMinutes
+          },
+          index
+        )
+      );
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       errors.push(`events[${index}] (${event.title ?? "untitled"}): ${message}`);

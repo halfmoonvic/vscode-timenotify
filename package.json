@@ -63,11 +63,17 @@
           "minimum": 0,
           "description": "Suppress duplicate reminders for the same event within this window."
         },
-        "timenotify.notificationLevel": {
+        "timenotify.notificationMode": {
           "type": "string",
-          "enum": ["info", "warning"],
-          "default": "info",
-          "description": "Notification level for reminders."
+          "enum": ["toast", "modal"],
+          "default": "toast",
+          "description": "Default reminder presentation mode."
+        },
+        "timenotify.snoozeMinutes": {
+          "type": "number",
+          "default": 10,
+          "minimum": 0,
+          "description": "Default snooze duration in minutes. Use 0 to disable snooze."
         },
         "timenotify.events": {
           "type": "array",
@@ -96,6 +102,16 @@
                 "type": "number",
                 "default": 0,
                 "minimum": 0
+              },
+              "notificationMode": {
+                "type": "string",
+                "enum": ["toast", "modal"],
+                "description": "Override the default reminder presentation mode for this event."
+              },
+              "snoozeMinutes": {
+                "type": "number",
+                "minimum": 0,
+                "description": "Override the default snooze duration for this event. Use 0 to disable snooze."
               }
             }
           }

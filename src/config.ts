@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import {
   EventConfig,
-  NotificationLevel,
+  NotificationMode,
   StatusBarAlignmentSetting,
   TimeNotifyConfig
 } from "./types";
@@ -12,7 +12,8 @@ const DEFAULTS: TimeNotifyConfig = {
   pollIntervalSeconds: 1,
   statusBarAlignment: "right",
   dedupeSeconds: 300,
-  notificationLevel: "info",
+  notificationMode: "toast",
+  snoozeMinutes: 10,
   events: []
 };
 
@@ -46,9 +47,9 @@ export function loadConfig(): TimeNotifyConfig {
     "statusBarAlignment",
     DEFAULTS.statusBarAlignment
   );
-  const level = cfg.get<NotificationLevel>(
-    "notificationLevel",
-    DEFAULTS.notificationLevel
+  const mode = cfg.get<NotificationMode>(
+    "notificationMode",
+    DEFAULTS.notificationMode
   );
 
   return {
@@ -63,7 +64,8 @@ export function loadConfig(): TimeNotifyConfig {
         ? alignment
         : DEFAULTS.statusBarAlignment,
     dedupeSeconds: toPositiveInt(cfg.get<number>("dedupeSeconds"), DEFAULTS.dedupeSeconds),
-    notificationLevel: level === "warning" ? "warning" : "info",
+    notificationMode: mode === "modal" ? "modal" : "toast",
+    snoozeMinutes: toPositiveInt(cfg.get<number>("snoozeMinutes"), DEFAULTS.snoozeMinutes),
     events: readEvents(cfg.get<unknown>("events", DEFAULTS.events))
   };
 }

@@ -4,6 +4,8 @@ TimeNotify for VS Code provides:
 - a live status bar clock
 - configurable reminders by date/time rules
 - optional advance reminders
+- optional modal reminders
+- snooze support
 - duplicate suppression window
 
 ## Configuration
@@ -15,14 +17,17 @@ TimeNotify for VS Code provides:
   "timenotify.pollIntervalSeconds": 1,
   "timenotify.statusBarAlignment": "right",
   "timenotify.dedupeSeconds": 300,
-  "timenotify.notificationLevel": "info",
+  "timenotify.notificationMode": "toast",
+  "timenotify.snoozeMinutes": 10,
   "timenotify.events": [
     {
       "title": "Standup",
       "message": "Daily sync starts now",
       "date": "workdays",
       "time": "10:00:00",
-      "advanceMinutes": 5
+      "advanceMinutes": 5,
+      "notificationMode": "modal",
+      "snoozeMinutes": 5
     },
     {
       "title": "Birthday",
@@ -42,6 +47,13 @@ TimeNotify for VS Code provides:
   ]
 }
 ```
+
+`notificationMode` supports `toast` and `modal`.
+
+`snoozeMinutes` controls how long the `Snooze` action delays a reminder:
+- global `timenotify.snoozeMinutes` applies by default
+- each event can override it
+- `0` disables `Snooze` for that event
 
 ## Date rules
 - `YYYY/MM/DD` exact date

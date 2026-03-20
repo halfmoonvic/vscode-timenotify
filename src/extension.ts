@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { loadConfig } from "./config";
-import { Notifier } from "./notifier";
+import { Notifier, SNOOZE_ACTION } from "./notifier";
 import { compileEvents } from "./parser";
 import { Scheduler } from "./scheduler";
 import { StatusBarClock } from "./statusBar";
@@ -18,8 +18,11 @@ function setup(context: vscode.ExtensionContext): void {
   clock = new StatusBarClock(config.clockFormat, config.statusBarAlignment);
   clock.start();
 
-  const notifier = new Notifier(config.notificationLevel);
-  const { compiled, errors } = compileEvents(config.events);
+  const notifier = new Notifier();
+  const { compiled, errors } = compileEvents(config.events, {
+    notificationMode: config.notificationMode,
+    snoozeMinutes: config.snoozeMinutes
+  });
   errors.forEach((line) => output?.appendLine(`[config] ${line}`));
 
   scheduler?.stop();
@@ -27,9 +30,13 @@ function setup(context: vscode.ExtensionContext): void {
     intervalSeconds: config.pollIntervalSeconds,
     dedupeSeconds: config.dedupeSeconds,
     events: config.enabled ? compiled : [],
-    onTrigger: (event) => {
+    onTrigger: (event, now) => {
       output?.appendLine(`[trigger] ${event.title}`);
-      void notifier.notify(event.title, event.message);
+      void notifier.notify(event).then((action) => {
+        if (action === SNOOZE_ACTION && event.snoozeMinutes > 0) {
+          scheduler?.scheduleSnooze(event, event.snoozeMinutes, now);
+        }
+      });
     }
   });
   scheduler.start();
