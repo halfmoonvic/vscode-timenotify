@@ -1,14 +1,42 @@
 # VS Code TimeNotify
 
-TimeNotify for VS Code provides:
-- a live status bar clock
-- configurable reminders by date/time rules
-- optional advance reminders
-- optional modal reminders
-- snooze support
-- duplicate suppression window
+TimeNotify is a VS Code extension that combines a live status bar clock with configurable date/time-based reminders, including advance alerts, snooze, toast or modal delivery, duplicate suppression, and automatic config reload.
 
-## Configuration
+## Features
+
+- Live status bar clock
+- Custom clock format tokens
+- Left or right status bar placement
+- Rule-based reminders by exact date, yearly date, monthly day, weekday list, and weekday range
+- Advance reminders with `advanceMinutes`
+- Toast or modal reminder delivery
+- Global defaults with per-event overrides
+- Snooze actions with configurable delay
+- Duplicate suppression using `dedupeSeconds`
+- Automatic reload when `timenotify` settings change
+- Output channel logging for config errors and trigger activity
+- `timenotify.showNow` command
+
+## Quick Start
+
+Open your VS Code settings JSON and add a minimal configuration like this:
+
+```json
+{
+  "timenotify.enabled": true,
+  "timenotify.events": [
+    {
+      "title": "Standup",
+      "date": "workdays",
+      "time": "10:00:00"
+    }
+  ]
+}
+```
+
+Once enabled, TimeNotify starts polling automatically and will show reminders when an event becomes due.
+
+## Full Configuration Example
 
 ```json
 {
@@ -48,14 +76,52 @@ TimeNotify for VS Code provides:
 }
 ```
 
-`notificationMode` supports `toast` and `modal`.
+## Configuration Reference
 
-`snoozeMinutes` controls how long the `Snooze Xm` action delays a reminder:
-- global `timenotify.snoozeMinutes` applies by default
-- each event can override it
-- `0` disables `Snooze` for that event
+### Top-level settings
 
-## Date rules
+- `timenotify.enabled`
+  Enables or disables scheduled reminders.
+- `timenotify.clockFormat`
+  Controls the status bar clock display format.
+- `timenotify.pollIntervalSeconds`
+  Controls how often the scheduler checks for due reminders.
+- `timenotify.statusBarAlignment`
+  Controls whether the clock appears on the `left` or `right` side of the status bar.
+- `timenotify.dedupeSeconds`
+  Suppresses repeated triggers for the same event within the configured window.
+- `timenotify.notificationMode`
+  Sets the global default reminder delivery mode: `toast` or `modal`.
+- `timenotify.snoozeMinutes`
+  Sets the global default snooze duration in minutes.
+- `timenotify.events`
+  Defines the list of reminder events.
+
+### Event fields
+
+Required:
+
+- `title`
+- `date`
+- `time`
+
+Optional:
+
+- `message`
+- `advanceMinutes`
+- `notificationMode`
+- `snoozeMinutes`
+
+Behavior:
+
+- Event-level `notificationMode` overrides the global `timenotify.notificationMode` default.
+- Event-level `snoozeMinutes` overrides the global `timenotify.snoozeMinutes` default.
+- `snoozeMinutes: 0` disables the snooze action for that event.
+- `advanceMinutes` makes the reminder fire before the scheduled event time.
+- If `message` is omitted, the reminder shows only the event title.
+
+## Date Rules
+
 - `YYYY/MM/DD` exact date
 - `MM/DD` yearly recurring
 - `DD` monthly recurring
@@ -70,10 +136,12 @@ TimeNotify for VS Code provides:
 
 Weekday ranges are circular, so ranges that cross Sunday are valid.
 
-## Time rules
+## Time Rules
+
 - `HH:mm:ss`
 
-## Clock format tokens
+## Clock Format Tokens
+
 - `YYYY` year
 - `MM` month
 - `DD` day
@@ -85,6 +153,20 @@ Weekday ranges are circular, so ranges that cross Sunday are valid.
 - `a` lowercase meridiem (`am` / `pm`)
 - `ddd` weekday short name
 - `dddd` weekday full name
+
+## Reminder Behavior
+
+- The scheduler checks reminders on a fixed polling interval.
+- Advance reminders trigger before the configured event time.
+- Duplicate suppression prevents rapid repeated notifications for the same event.
+- Snoozing schedules the same reminder again after the configured delay.
+- Changes under the `timenotify` settings namespace are reloaded automatically.
+- Invalid config entries are reported in the `TimeNotify` output channel.
+
+## Commands
+
+- `TimeNotify: Show Now`
+  Shows the current local time immediately.
 
 ## Development
 
