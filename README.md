@@ -50,7 +50,7 @@ TimeNotify for VS Code provides:
 
 `notificationMode` supports `toast` and `modal`.
 
-`snoozeMinutes` controls how long the `Snooze` action delays a reminder:
+`snoozeMinutes` controls how long the `Snooze Xm` action delays a reminder:
 - global `timenotify.snoozeMinutes` applies by default
 - each event can override it
 - `0` disables `Snooze` for that event

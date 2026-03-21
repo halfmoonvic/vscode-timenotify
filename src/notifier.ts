@@ -1,12 +1,12 @@
 import * as vscode from "vscode";
 import { CompiledEvent } from "./types";
-
-export const SNOOZE_ACTION = "Snooze";
+import { getSnoozeAction } from "./snooze";
 
 export class Notifier {
   notify(event: CompiledEvent): Thenable<string | undefined> {
     const text = event.message ? `${event.title}: ${event.message}` : event.title;
-    const actions = event.snoozeMinutes > 0 ? [SNOOZE_ACTION] : [];
+    const snoozeAction = getSnoozeAction(event);
+    const actions = snoozeAction ? [snoozeAction] : [];
 
     if (event.notificationMode === "modal") {
       return vscode.window.showInformationMessage(text, { modal: true }, ...actions);

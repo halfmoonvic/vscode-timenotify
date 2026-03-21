@@ -1,8 +1,9 @@
 import * as vscode from "vscode";
 import { loadConfig } from "./config";
-import { Notifier, SNOOZE_ACTION } from "./notifier";
+import { Notifier } from "./notifier";
 import { compileEvents } from "./parser";
 import { Scheduler } from "./scheduler";
+import { isSnoozeAction } from "./snooze";
 import { StatusBarClock } from "./statusBar";
 
 let scheduler: Scheduler | undefined;
@@ -33,7 +34,7 @@ function setup(context: vscode.ExtensionContext): void {
     onTrigger: (event, now) => {
       output?.appendLine(`[trigger] ${event.title}`);
       void notifier.notify(event).then((action) => {
-        if (action === SNOOZE_ACTION && event.snoozeMinutes > 0) {
+        if (isSnoozeAction(action, event)) {
           scheduler?.scheduleSnooze(event, event.snoozeMinutes, now);
         }
       });
