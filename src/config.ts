@@ -8,12 +8,12 @@ import {
 
 const DEFAULTS: TimeNotifyConfig = {
   enabled: true,
-  clockFormat: "HH:mm:ss",
+  clockFormat: "ddd MM/DD HH:mm:ss",
   pollIntervalSeconds: 1,
   statusBarAlignment: "right",
   dedupeSeconds: 300,
   notificationMode: "toast",
-  snoozeMinutes: 10,
+  snoozeMinutes: 5,
   events: []
 };
 

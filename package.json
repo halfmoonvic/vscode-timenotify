@@ -41,7 +41,7 @@
         },
         "timenotify.clockFormat": {
           "type": "string",
-          "default": "HH:mm:ss",
+          "default": "ddd MM/DD HH:mm:ss",
           "description": "Status bar clock format."
         },
         "timenotify.pollIntervalSeconds": {
@@ -71,7 +71,7 @@
         },
         "timenotify.snoozeMinutes": {
           "type": "number",
-          "default": 10,
+          "default": 5,
           "minimum": 0,
           "description": "Default snooze duration in minutes. Use 0 to disable snooze."
         },
