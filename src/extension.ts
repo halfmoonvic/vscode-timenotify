@@ -28,7 +28,7 @@ function setup(context: vscode.ExtensionContext): void {
 
   scheduler?.stop();
   scheduler = new Scheduler({
-    intervalSeconds: config.pollIntervalSeconds,
+    intervalSeconds: 1,
     dedupeSeconds: config.dedupeSeconds,
     events: config.enabled ? compiled : [],
     onTrigger: (event, now) => {

@@ -42,11 +42,10 @@ Once enabled, TimeNotify starts polling automatically and will show reminders wh
 {
   "timenotify.enabled": true,
   "timenotify.clockFormat": "HH:mm:ss",
-  "timenotify.pollIntervalSeconds": 1,
   "timenotify.statusBarAlignment": "right",
   "timenotify.dedupeSeconds": 300,
   "timenotify.notificationMode": "toast",
-  "timenotify.snoozeMinutes": 10,
+  "timenotify.snoozeMinutes": 5,
   "timenotify.events": [
     {
       "title": "Standup",
@@ -84,8 +83,6 @@ Once enabled, TimeNotify starts polling automatically and will show reminders wh
   Enables or disables scheduled reminders.
 - `timenotify.clockFormat`
   Controls the status bar clock display format.
-- `timenotify.pollIntervalSeconds`
-  Controls how often the scheduler checks for due reminders.
 - `timenotify.statusBarAlignment`
   Controls whether the clock appears on the `left` or `right` side of the status bar.
 - `timenotify.dedupeSeconds`

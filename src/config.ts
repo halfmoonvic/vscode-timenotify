@@ -9,7 +9,6 @@ import {
 const DEFAULTS: TimeNotifyConfig = {
   enabled: true,
   clockFormat: "ddd MM/DD HH:mm:ss",
-  pollIntervalSeconds: 1,
   statusBarAlignment: "right",
   dedupeSeconds: 300,
   notificationMode: "toast",
@@ -55,10 +54,6 @@ export function loadConfig(): TimeNotifyConfig {
   return {
     enabled: cfg.get<boolean>("enabled", DEFAULTS.enabled),
     clockFormat: cfg.get<string>("clockFormat", DEFAULTS.clockFormat),
-    pollIntervalSeconds: Math.max(
-      1,
-      toPositiveInt(cfg.get<number>("pollIntervalSeconds"), DEFAULTS.pollIntervalSeconds)
-    ),
     statusBarAlignment:
       alignment === "left" || alignment === "right"
         ? alignment

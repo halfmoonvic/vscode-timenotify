@@ -14,7 +14,6 @@ export interface EventConfig {
 export interface TimeNotifyConfig {
   enabled: boolean;
   clockFormat: string;
-  pollIntervalSeconds: number;
   statusBarAlignment: StatusBarAlignmentSetting;
   dedupeSeconds: number;
   notificationMode: NotificationMode;
