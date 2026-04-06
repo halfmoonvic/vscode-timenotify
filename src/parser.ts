@@ -86,13 +86,29 @@ function parseWeekdayExpression(input: string): number[] {
   return uniqueSorted(weekdays);
 }
 
+function isLeapYear(year: number): boolean {
+  return year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
+}
+
+function getDaysInMonth(year: number, month: number): number {
+  switch (month) {
+    case 2:
+      return isLeapYear(year) ? 29 : 28;
+    case 4:
+    case 6:
+    case 9:
+    case 11:
+      return 30;
+    default:
+      return 31;
+  }
+}
+
 function isValidCalendarDate(year: number, month: number, day: number): boolean {
-  const candidate = new Date(year, month - 1, day);
-  return (
-    candidate.getFullYear() === year &&
-    candidate.getMonth() === month - 1 &&
-    candidate.getDate() === day
-  );
+  if (month < 1 || month > 12) {
+    return false;
+  }
+  return day >= 1 && day <= getDaysInMonth(year, month);
 }
 
 function assertValidCalendarDate(input: string, year: number, month: number, day: number): void {

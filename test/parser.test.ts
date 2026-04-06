@@ -99,9 +99,16 @@ test("compileEvent rejects invalid calendar dates", () => {
 test("compileEvent accepts valid calendar edge dates including leap day", () => {
   const exact = compileEvent({ title: "Exact", date: "2026/02/28", time: "08:00:00" }, 0);
   const yearly = compileEvent({ title: "LeapDay", date: "2/29", time: "08:00:00" }, 1);
+  const earlyYear = compileEvent({ title: "EarlyYear", date: "0001/01/01", time: "08:00:00" }, 2);
+  const lateDoubleDigitYear = compileEvent(
+    { title: "LateDoubleDigitYear", date: "0099/12/31", time: "08:00:00" },
+    3
+  );
 
   assert.equal(exact.dateRule.kind, "exact");
   assert.deepEqual(yearly.dateRule, { kind: "yearly", month: 2, day: 29 });
+  assert.deepEqual(earlyYear.dateRule, { kind: "exact", year: 1, month: 1, day: 1 });
+  assert.deepEqual(lateDoubleDigitYear.dateRule, { kind: "exact", year: 99, month: 12, day: 31 });
 });
 
 test("compileEvents applies global defaults and event overrides", () => {
