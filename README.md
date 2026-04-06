@@ -162,6 +162,7 @@ Notes:
 - `iso` always uses UTC.
 - `isoDate` uses the UTC calendar date portion of ISO time.
 - `dateTimeMs`, `dateTime`, `time`, `compactDateTime`, `compactDate`, and `date` use the local machine time zone.
+- In the Quick Pick, the main label is a friendly name, the short description shows the config key, and the detail line shows a live preview.
 - If `timenotify.insert` resolves to one valid item, `insertNow` inserts it directly.
 - If it resolves to multiple valid items, `insertNow` shows a Quick Pick to let you choose.
 

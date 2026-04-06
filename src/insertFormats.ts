@@ -105,3 +105,15 @@ export function getInsertFormatDescription(date: Date, format: InsertFormat): st
 
   return `${formatInsertValue(date, format)} (local)`;
 }
+
+export function createInsertFormatPickItems(
+  date: Date,
+  formats: readonly InsertFormat[]
+): Array<{ label: string; description: string; detail: string; format: InsertFormat }> {
+  return formats.map((format) => ({
+    label: getInsertFormatLabel(format),
+    description: format,
+    detail: getInsertFormatDescription(date, format),
+    format
+  }));
+}

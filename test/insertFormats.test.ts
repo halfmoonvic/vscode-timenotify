@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { DEFAULT_INSERT_FORMATS } from "../src/defaults";
 import {
+  createInsertFormatPickItems,
   formatInsertValue,
   getInsertFormatDescription,
   getInsertFormatLabel,
@@ -52,4 +53,14 @@ test("insert format labels and descriptions are human-readable", () => {
 test("shouldPromptForInsertFormat only prompts when there are multiple choices", () => {
   assert.equal(shouldPromptForInsertFormat(["timestampMs"]), false);
   assert.equal(shouldPromptForInsertFormat(["timestampMs", "iso"]), true);
+});
+
+test("createInsertFormatPickItems exposes label, key, and preview separately", () => {
+  const date = new Date(2026, 3, 6, 16, 14, 55, 123);
+  const [item] = createInsertFormatPickItems(date, ["dateTime"]);
+
+  assert.equal(item.label, "Local Date Time");
+  assert.equal(item.description, "dateTime");
+  assert.equal(item.detail, "2026-04-06 16:14:55 (local)");
+  assert.equal(item.format, "dateTime");
 });

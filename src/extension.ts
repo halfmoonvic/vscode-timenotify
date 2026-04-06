@@ -1,9 +1,8 @@
 import * as vscode from "vscode";
 import { loadConfig } from "./config";
 import {
+  createInsertFormatPickItems,
   formatInsertValue,
-  getInsertFormatDescription,
-  getInsertFormatLabel,
   shouldPromptForInsertFormat
 } from "./insertFormats";
 import { Notifier } from "./notifier";
@@ -64,14 +63,9 @@ async function pickInsertFormat(formats: InsertFormat[]): Promise<InsertFormat |
   }
 
   const now = new Date();
-  const selected = await vscode.window.showQuickPick(
-    formats.map((format) => ({
-      label: getInsertFormatLabel(format),
-      description: getInsertFormatDescription(now, format),
-      format
-    })),
-    { placeHolder: "Select a time format to insert" }
-  );
+  const selected = await vscode.window.showQuickPick(createInsertFormatPickItems(now, formats), {
+    placeHolder: "Select a time format to insert"
+  });
 
   return selected?.format;
 }
