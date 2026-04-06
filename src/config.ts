@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import { DEFAULT_NOTIFICATION_MODE, DEFAULT_SNOOZE_MINUTES } from "./defaults";
 import {
   EventConfig,
   NotificationMode,
@@ -11,8 +12,8 @@ const DEFAULTS: TimeNotifyConfig = {
   clockFormat: "ddd MM/DD HH:mm:ss",
   statusBarAlignment: "right",
   dedupeSeconds: 300,
-  notificationMode: "toast",
-  snoozeMinutes: 5,
+  notificationMode: DEFAULT_NOTIFICATION_MODE,
+  snoozeMinutes: DEFAULT_SNOOZE_MINUTES,
   events: []
 };
 

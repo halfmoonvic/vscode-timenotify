@@ -13,7 +13,7 @@ test("compileEvent parses yearly date with strict HH:mm:ss time", () => {
   assert.equal(event.timeRule.second, 0);
   assert.equal(event.advanceMinutes, 15);
   assert.equal(event.notificationMode, "toast");
-  assert.equal(event.snoozeMinutes, 10);
+  assert.equal(event.snoozeMinutes, 5);
 });
 
 test("compileEvent parses a single weekday into unified weekdays model", () => {
@@ -82,6 +82,26 @@ test("compileEvents captures invalid entries", () => {
   ]);
   assert.equal(result.compiled.length, 1);
   assert.equal(result.errors.length, 2);
+});
+
+test("compileEvent rejects invalid calendar dates", () => {
+  assert.throws(() => compileEvent({ title: "Bad", date: "2026/02/31", time: "08:00:00" }, 0), {
+    message: "invalid calendar date: 2026/02/31"
+  });
+  assert.throws(() => compileEvent({ title: "Bad", date: "4/31", time: "08:00:00" }, 0), {
+    message: "invalid calendar date: 4/31"
+  });
+  assert.throws(() => compileEvent({ title: "Bad", date: "2/30", time: "08:00:00" }, 0), {
+    message: "invalid calendar date: 2/30"
+  });
+});
+
+test("compileEvent accepts valid calendar edge dates including leap day", () => {
+  const exact = compileEvent({ title: "Exact", date: "2026/02/28", time: "08:00:00" }, 0);
+  const yearly = compileEvent({ title: "LeapDay", date: "2/29", time: "08:00:00" }, 1);
+
+  assert.equal(exact.dateRule.kind, "exact");
+  assert.deepEqual(yearly.dateRule, { kind: "yearly", month: 2, day: 29 });
 });
 
 test("compileEvents applies global defaults and event overrides", () => {

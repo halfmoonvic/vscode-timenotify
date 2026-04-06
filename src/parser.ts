@@ -1,3 +1,4 @@
+import { DEFAULT_NOTIFICATION_MODE, DEFAULT_SNOOZE_MINUTES } from "./defaults";
 import { CompiledEvent, DateRule, EventConfig, NotificationMode, TimeRule } from "./types";
 
 export interface EventDefaults {
@@ -20,6 +21,7 @@ const WEEKDAY_ALIASES: Record<string, number[]> = {
   workdays: [1, 2, 3, 4, 5],
   weekends: [0, 6]
 };
+const LEAP_YEAR_REFERENCE = 2024;
 
 function parseIntStrict(value: string, label: string): number {
   if (!/^\d+$/.test(value)) {
@@ -84,6 +86,21 @@ function parseWeekdayExpression(input: string): number[] {
   return uniqueSorted(weekdays);
 }
 
+function isValidCalendarDate(year: number, month: number, day: number): boolean {
+  const candidate = new Date(year, month - 1, day);
+  return (
+    candidate.getFullYear() === year &&
+    candidate.getMonth() === month - 1 &&
+    candidate.getDate() === day
+  );
+}
+
+function assertValidCalendarDate(input: string, year: number, month: number, day: number): void {
+  if (!isValidCalendarDate(year, month, day)) {
+    throw new Error(`invalid calendar date: ${input}`);
+  }
+}
+
 function parseDateRule(input: string): DateRule {
   const value = input.trim();
   if (!value) {
@@ -117,6 +134,7 @@ function parseDateRule(input: string): DateRule {
     if (day < 1 || day > 31) {
       throw new Error(`day out of range: ${day}`);
     }
+    assertValidCalendarDate(value, year, month, day);
     return { kind: "exact", year, month, day };
   }
 
@@ -129,6 +147,7 @@ function parseDateRule(input: string): DateRule {
     if (day < 1 || day > 31) {
       throw new Error(`day out of range: ${day}`);
     }
+    assertValidCalendarDate(value, LEAP_YEAR_REFERENCE, month, day);
     return { kind: "yearly", month, day };
   }
 
@@ -176,7 +195,7 @@ export function compileEvent(event: EventConfig, index: number): CompiledEvent {
 
   const notificationMode =
     event.notificationMode === "modal" ? "modal" : event.notificationMode === "toast" ? "toast" : "toast";
-  const snoozeMinutesRaw = event.snoozeMinutes ?? 10;
+  const snoozeMinutesRaw = event.snoozeMinutes ?? DEFAULT_SNOOZE_MINUTES;
   if (!Number.isFinite(snoozeMinutesRaw) || snoozeMinutesRaw < 0) {
     throw new Error(`snoozeMinutes must be >= 0: ${snoozeMinutesRaw}`);
   }
@@ -195,7 +214,10 @@ export function compileEvent(event: EventConfig, index: number): CompiledEvent {
 
 export function compileEvents(
   events: EventConfig[],
-  defaults: EventDefaults = { notificationMode: "toast", snoozeMinutes: 10 }
+  defaults: EventDefaults = {
+    notificationMode: DEFAULT_NOTIFICATION_MODE,
+    snoozeMinutes: DEFAULT_SNOOZE_MINUTES
+  }
 ): { compiled: CompiledEvent[]; errors: string[] } {
   const compiled: CompiledEvent[] = [];
   const errors: string[] = [];
