@@ -14,20 +14,44 @@ interface SnoozedTrigger {
   triggerAtSec: number;
 }
 
+type EventTriggerKind = "advance" | "scheduled";
+
 function toSecondPrecision(date: Date): number {
   return Math.floor(date.getTime() / 1000);
 }
 
-export function shouldTriggerAt(event: CompiledEvent, now: Date): boolean {
-  const candidate = new Date(now.getTime() + event.advanceMinutes * 60_000);
-  if (!isDateMatch(event.dateRule, candidate)) {
-    return false;
-  }
+function isEventTimeMatch(event: CompiledEvent, value: Date): boolean {
   return (
-    candidate.getHours() === event.timeRule.hour &&
-    candidate.getMinutes() === event.timeRule.minute &&
-    candidate.getSeconds() === event.timeRule.second
+    isDateMatch(event.dateRule, value) &&
+    value.getHours() === event.timeRule.hour &&
+    value.getMinutes() === event.timeRule.minute &&
+    value.getSeconds() === event.timeRule.second
   );
+}
+
+function getDueTriggerKinds(event: CompiledEvent, now: Date): EventTriggerKind[] {
+  const due: EventTriggerKind[] = [];
+
+  if (event.advanceMinutes > 0) {
+    const candidate = new Date(now.getTime() + event.advanceMinutes * 60_000);
+    if (isEventTimeMatch(event, candidate)) {
+      due.push("advance");
+    }
+  }
+
+  if (isEventTimeMatch(event, now)) {
+    due.push("scheduled");
+  }
+
+  return due;
+}
+
+function getTriggerId(event: CompiledEvent, kind: EventTriggerKind): string {
+  return `${event.id}@${kind}`;
+}
+
+export function shouldTriggerAt(event: CompiledEvent, now: Date): boolean {
+  return getDueTriggerKinds(event, now).length > 0;
 }
 
 export class Scheduler {
@@ -62,11 +86,14 @@ export class Scheduler {
     const nowSec = toSecondPrecision(now);
     this.triggerSnoozed(now, nowSec);
     for (const event of this.options.events) {
-      if (!shouldTriggerAt(event, now) || this.shouldSkipTrigger(event.id, nowSec)) {
-        continue;
+      for (const kind of getDueTriggerKinds(event, now)) {
+        const triggerId = getTriggerId(event, kind);
+        if (this.shouldSkipTrigger(triggerId, nowSec)) {
+          continue;
+        }
+        this.markTriggered(triggerId, nowSec);
+        this.options.onTrigger(event, now);
       }
-      this.markTriggered(event.id, nowSec);
-      this.options.onTrigger(event, now);
     }
   }
 

@@ -117,7 +117,7 @@ Behavior:
 - Event-level `notificationMode` overrides the global `timenotify.notificationMode` default.
 - Event-level `snoozeMinutes` overrides the global `timenotify.snoozeMinutes` default.
 - `snoozeMinutes: 0` disables the snooze action for that event.
-- `advanceMinutes` makes the reminder fire before the scheduled event time.
+- `advanceMinutes` adds an early reminder before the scheduled event time, and the event still reminds again at the scheduled time.
 - If `message` is omitted, the reminder shows only the event title.
 
 ## Date Rules
@@ -158,7 +158,7 @@ Weekday ranges are circular, so ranges that cross Sunday are valid.
 ## Reminder Behavior
 
 - The scheduler checks reminders on a fixed polling interval.
-- Advance reminders trigger before the configured event time.
+- Advance reminders trigger before the configured event time, and events with `advanceMinutes` still trigger again at the configured time.
 - Duplicate suppression prevents rapid repeated notifications for the same event.
 - Snoozing schedules the same reminder again after the configured delay.
 - Changes under the `timenotify` settings namespace are reloaded automatically.

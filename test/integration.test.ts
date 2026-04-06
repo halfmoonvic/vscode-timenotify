@@ -32,5 +32,7 @@ test("integration: compiled events are consumed by scheduler", () => {
   });
 
   scheduler.tick(new Date(2026, 2, 18, 10, 20, 0));
-  assert.deepEqual(hits, ["Standup"]);
+  scheduler.tick(new Date(2026, 2, 18, 10, 30, 0));
+
+  assert.deepEqual(hits, ["Standup", "Standup"]);
 });

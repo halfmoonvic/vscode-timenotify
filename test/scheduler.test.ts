@@ -18,6 +18,15 @@ test("shouldTriggerAt applies advanceMinutes", () => {
   assert.equal(shouldTriggerAt(event, now), true);
 });
 
+test("shouldTriggerAt still matches at scheduled time when advanceMinutes is set", () => {
+  const event = compileEvent(
+    { title: "Meeting", date: "3/18", time: "10:30:00", advanceMinutes: 10 },
+    0
+  );
+  const now = new Date(2026, 2, 18, 10, 30, 0);
+  assert.equal(shouldTriggerAt(event, now), true);
+});
+
 test("scheduler dedupes within configured window", () => {
   const event = compileEvent({ title: "Ping", date: "3/18", time: "10:00:00" }, 0);
   const hits: string[] = [];
@@ -32,6 +41,49 @@ test("scheduler dedupes within configured window", () => {
   scheduler.tick(new Date(2026, 2, 18, 10, 0, 0));
 
   assert.equal(hits.length, 1);
+});
+
+test("scheduler triggers advance reminder and on-time reminder separately", () => {
+  const event = compileEvent(
+    { title: "Meeting", date: "3/18", time: "10:30:00", advanceMinutes: 10 },
+    0
+  );
+  const hits: string[] = [];
+  const scheduler = new Scheduler({
+    intervalSeconds: 1,
+    dedupeSeconds: 300,
+    events: [event],
+    onTrigger: () => hits.push("x")
+  });
+
+  scheduler.tick(new Date(2026, 2, 18, 10, 20, 0));
+  scheduler.tick(new Date(2026, 2, 18, 10, 30, 0));
+
+  assert.equal(hits.length, 2);
+});
+
+test("scheduler dedupes repeated ticks per trigger kind without suppressing on-time reminder", () => {
+  const event = compileEvent(
+    { title: "Meeting", date: "3/18", time: "10:30:00", advanceMinutes: 10 },
+    0
+  );
+  const hits: string[] = [];
+  const scheduler = new Scheduler({
+    intervalSeconds: 1,
+    dedupeSeconds: 300,
+    events: [event],
+    onTrigger: () => hits.push("x")
+  });
+
+  const advance = new Date(2026, 2, 18, 10, 20, 0);
+  const scheduled = new Date(2026, 2, 18, 10, 30, 0);
+
+  scheduler.tick(advance);
+  scheduler.tick(advance);
+  scheduler.tick(scheduled);
+  scheduler.tick(scheduled);
+
+  assert.equal(hits.length, 2);
 });
 
 test("scheduler triggers workdays events on matching weekdays", () => {
