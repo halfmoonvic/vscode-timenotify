@@ -3,6 +3,7 @@
 ## Commit Discipline
 
 - Implement work in small, coherent increments.
+- After each completed core change and before creating the commit, review the current changes, fix any substantive findings, then commit.
 - Create a git commit after each completed core feature or behavior change.
 - Do not wait until all planned work is finished to create a single large commit.
 - Keep each commit focused on one main functional point.
