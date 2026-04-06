@@ -1,5 +1,16 @@
 export type StatusBarAlignmentSetting = "left" | "right";
 export type NotificationMode = "toast" | "modal";
+export type InsertFormat =
+  | "timestampMs"
+  | "timestampSec"
+  | "iso"
+  | "isoDate"
+  | "dateTimeMs"
+  | "dateTime"
+  | "time"
+  | "compactDateTime"
+  | "compactDate"
+  | "date";
 
 export interface EventConfig {
   title: string;
@@ -18,6 +29,7 @@ export interface TimeNotifyConfig {
   dedupeSeconds: number;
   notificationMode: NotificationMode;
   snoozeMinutes: number;
+  insert: InsertFormat[];
   events: EventConfig[];
 }
 

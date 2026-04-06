@@ -1,9 +1,16 @@
 import * as vscode from "vscode";
 import { loadConfig } from "./config";
+import {
+  formatInsertValue,
+  getInsertFormatDescription,
+  getInsertFormatLabel,
+  shouldPromptForInsertFormat
+} from "./insertFormats";
 import { Notifier } from "./notifier";
 import { compileEvents } from "./parser";
 import { Scheduler } from "./scheduler";
 import { isSnoozeAction } from "./snooze";
+import { InsertFormat } from "./types";
 import { StatusBarClock } from "./statusBar";
 
 let scheduler: Scheduler | undefined;
@@ -51,16 +58,56 @@ function setup(context: vscode.ExtensionContext): void {
   context.subscriptions.push(configWatcher);
 }
 
+async function pickInsertFormat(formats: InsertFormat[]): Promise<InsertFormat | undefined> {
+  if (!shouldPromptForInsertFormat(formats)) {
+    return formats[0];
+  }
+
+  const now = new Date();
+  const selected = await vscode.window.showQuickPick(
+    formats.map((format) => ({
+      label: getInsertFormatLabel(format),
+      description: getInsertFormatDescription(now, format),
+      format
+    })),
+    { placeHolder: "Select a time format to insert" }
+  );
+
+  return selected?.format;
+}
+
+async function insertNow(): Promise<void> {
+  const editor = vscode.window.activeTextEditor;
+  if (!editor) {
+    void vscode.window.showInformationMessage("No active text editor to insert into.");
+    return;
+  }
+
+  const { insert } = loadConfig();
+  const format = await pickInsertFormat(insert);
+  if (!format) {
+    return;
+  }
+
+  const text = formatInsertValue(new Date(), format);
+  await editor.edit((editBuilder) => {
+    for (const selection of editor.selections) {
+      editBuilder.replace(selection, text);
+    }
+  });
+}
+
 export function activate(context: vscode.ExtensionContext): void {
   setup(context);
 
-  const command = vscode.commands.registerCommand("timenotify.showNow", () => {
+  const showNowCommand = vscode.commands.registerCommand("timenotify.showNow", () => {
     const now = new Date().toLocaleString();
     void vscode.window.showInformationMessage(`Current time: ${now}`);
   });
+  const insertNowCommand = vscode.commands.registerCommand("timenotify.insertNow", insertNow);
 
   context.subscriptions.push(clock!);
-  context.subscriptions.push(command);
+  context.subscriptions.push(showNowCommand, insertNowCommand);
 }
 
 export function deactivate(): void {

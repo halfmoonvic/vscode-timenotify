@@ -1,5 +1,10 @@
 import * as vscode from "vscode";
-import { DEFAULT_NOTIFICATION_MODE, DEFAULT_SNOOZE_MINUTES } from "./defaults";
+import {
+  DEFAULT_INSERT_FORMATS,
+  DEFAULT_NOTIFICATION_MODE,
+  DEFAULT_SNOOZE_MINUTES
+} from "./defaults";
+import { normalizeInsertFormats } from "./insertFormats";
 import {
   EventConfig,
   NotificationMode,
@@ -14,6 +19,7 @@ const DEFAULTS: TimeNotifyConfig = {
   dedupeSeconds: 300,
   notificationMode: DEFAULT_NOTIFICATION_MODE,
   snoozeMinutes: DEFAULT_SNOOZE_MINUTES,
+  insert: DEFAULT_INSERT_FORMATS,
   events: []
 };
 
@@ -62,6 +68,7 @@ export function loadConfig(): TimeNotifyConfig {
     dedupeSeconds: toPositiveInt(cfg.get<number>("dedupeSeconds"), DEFAULTS.dedupeSeconds),
     notificationMode: mode === "modal" ? "modal" : "toast",
     snoozeMinutes: toPositiveInt(cfg.get<number>("snoozeMinutes"), DEFAULTS.snoozeMinutes),
+    insert: normalizeInsertFormats(cfg.get<unknown>("insert", DEFAULTS.insert), DEFAULT_INSERT_FORMATS),
     events: readEvents(cfg.get<unknown>("events", DEFAULTS.events))
   };
 }

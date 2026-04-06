@@ -22,13 +22,18 @@
   "main": "./dist/src/extension.js",
   "activationEvents": [
     "onStartupFinished",
-    "onCommand:timenotify.showNow"
+    "onCommand:timenotify.showNow",
+    "onCommand:timenotify.insertNow"
   ],
   "contributes": {
     "commands": [
       {
         "command": "timenotify.showNow",
         "title": "TimeNotify: Show Current Time"
+      },
+      {
+        "command": "timenotify.insertNow",
+        "title": "TimeNotify: Insert Current Time"
       }
     ],
     "configuration": {
@@ -67,6 +72,26 @@
           "default": 5,
           "minimum": 0,
           "description": "Default snooze duration in minutes. Use 0 to disable snooze."
+        },
+        "timenotify.insert": {
+          "type": "array",
+          "default": ["timestampMs", "timestampSec", "iso"],
+          "description": "Available formats for the Insert Current Time command. If only one valid format is configured, it is inserted directly without prompting.",
+          "items": {
+            "type": "string",
+            "enum": [
+              "timestampMs",
+              "timestampSec",
+              "iso",
+              "isoDate",
+              "dateTimeMs",
+              "dateTime",
+              "time",
+              "compactDateTime",
+              "compactDate",
+              "date"
+            ]
+          }
         },
         "timenotify.events": {
           "type": "array",

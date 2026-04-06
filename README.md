@@ -16,6 +16,7 @@ TimeNotify is a VS Code extension that combines a live status bar clock with con
 - Automatic reload when `timenotify` settings change
 - Output channel logging for config errors and trigger activity
 - `timenotify.showNow` command
+- `timenotify.insertNow` command with configurable backend-friendly time formats
 
 ## Quick Start
 
@@ -46,6 +47,7 @@ Once enabled, TimeNotify starts polling automatically and will show reminders wh
   "timenotify.dedupeSeconds": 300,
   "timenotify.notificationMode": "toast",
   "timenotify.snoozeMinutes": 5,
+  "timenotify.insert": ["timestampMs", "timestampSec", "iso", "dateTime"],
   "timenotify.events": [
     {
       "title": "Standup",
@@ -91,6 +93,8 @@ Once enabled, TimeNotify starts polling automatically and will show reminders wh
   Sets the global default reminder delivery mode: `toast` or `modal`.
 - `timenotify.snoozeMinutes`
   Sets the global default snooze duration in minutes.
+- `timenotify.insert`
+  Controls which time formats are offered by the `TimeNotify: Insert Current Time` command.
 - `timenotify.events`
   Defines the list of reminder events.
 
@@ -138,6 +142,29 @@ Weekday ranges are circular, so ranges that cross Sunday are valid.
 
 - `HH:mm:ss`
 
+## Insert Formats
+
+`timenotify.insert` accepts any combination of:
+
+- `timestampMs` -> `1712390400123`
+- `timestampSec` -> `1712390400`
+- `iso` -> `2026-04-06T08:14:55.123Z`
+- `isoDate` -> `2026-04-06`
+- `dateTimeMs` -> `2026-04-06 16:14:55.123`
+- `dateTime` -> `2026-04-06 16:14:55`
+- `time` -> `16:14:55`
+- `compactDateTime` -> `20260406161455`
+- `compactDate` -> `20260406`
+- `date` -> `2026-04-06`
+
+Notes:
+
+- `iso` always uses UTC.
+- `isoDate` uses the UTC calendar date portion of ISO time.
+- `dateTimeMs`, `dateTime`, `time`, `compactDateTime`, `compactDate`, and `date` use the local machine time zone.
+- If `timenotify.insert` resolves to one valid item, `insertNow` inserts it directly.
+- If it resolves to multiple valid items, `insertNow` shows a Quick Pick to let you choose.
+
 ## Clock Format Tokens
 
 - `YYYY` year
@@ -165,6 +192,8 @@ Weekday ranges are circular, so ranges that cross Sunday are valid.
 
 - `TimeNotify: Show Now`
   Shows the current local time immediately.
+- `TimeNotify: Insert Current Time`
+  Inserts the current time at the cursor, or replaces the current selection. Uses the configured `timenotify.insert` formats and only prompts when more than one valid format is available.
 
 ## Development
 
