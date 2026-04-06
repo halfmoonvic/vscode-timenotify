@@ -131,6 +131,7 @@ Behavior:
 - `Fri-Mon` wrapped weekday range across week boundaries
 - `Mon,Wed,Fri` weekday list
 - `Mon-Fri,Sun` mixed weekday range and list
+- `everyday` alias for `Mon-Sun`
 - `workdays` alias for `Mon-Fri`
 - `weekends` alias for `Sat,Sun`
 

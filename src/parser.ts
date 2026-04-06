@@ -16,6 +16,7 @@ const WEEKDAYS: Record<string, number> = {
 };
 
 const WEEKDAY_ALIASES: Record<string, number[]> = {
+  everyday: [0, 1, 2, 3, 4, 5, 6],
   workdays: [1, 2, 3, 4, 5],
   weekends: [0, 6]
 };

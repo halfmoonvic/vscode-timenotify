@@ -47,6 +47,10 @@ test("compileEvent parses weekday ranges lists and aliases", () => {
     { title: "Weekend", date: "weekends", time: "08:00:00" },
     6
   );
+  const everydayEvent = compileEvent(
+    { title: "Everyday", date: "everyday", time: "08:00:00" },
+    7
+  );
 
   assert.deepEqual(rangeEvent.dateRule, { kind: "weekdays", weekdays: [1, 2, 3, 4, 5] });
   assert.deepEqual(fullWeekEvent.dateRule, { kind: "weekdays", weekdays: [0, 1, 2, 3, 4, 5, 6] });
@@ -55,6 +59,7 @@ test("compileEvent parses weekday ranges lists and aliases", () => {
   assert.deepEqual(mixedEvent.dateRule, { kind: "weekdays", weekdays: [0, 1, 2, 3, 4, 5] });
   assert.deepEqual(aliasEvent.dateRule, { kind: "weekdays", weekdays: [1, 2, 3, 4, 5] });
   assert.deepEqual(weekendEvent.dateRule, { kind: "weekdays", weekdays: [0, 6] });
+  assert.deepEqual(everydayEvent.dateRule, { kind: "weekdays", weekdays: [0, 1, 2, 3, 4, 5, 6] });
 });
 
 test("compileEvent rejects non-HH:mm:ss time formats", () => {
