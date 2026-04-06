@@ -6,7 +6,6 @@ TimeNotify is a VS Code extension that combines a live status bar clock with con
 
 - Live status bar clock
 - Custom clock format tokens
-- Left or right status bar placement
 - Rule-based reminders by exact date, yearly date, monthly day, weekday list, and weekday range
 - Advance reminders with `advanceMinutes`
 - Toast or modal reminder delivery
@@ -94,7 +93,7 @@ Once enabled, TimeNotify starts polling automatically and will show reminders wh
 - `timenotify.snoozeMinutes`
   Sets the global default snooze duration in minutes.
 - `timenotify.insert`
-  Controls which time formats are offered by the `TimeNotify: Insert Current Time` command.
+  Controls which time formats are offered by the `TimeNotify: Insert Current Time` command. One valid item inserts directly; multiple valid items open a Quick Pick.
 - `timenotify.events`
   Defines the list of reminder events.
 
@@ -159,9 +158,13 @@ Weekday ranges are circular, so ranges that cross Sunday are valid.
 
 Notes:
 
+- Run `TimeNotify: Insert Current Time` to insert a configured current-time value into the active editor.
+- There are 10 built-in insert format keys in total.
 - `iso` always uses UTC.
 - `isoDate` uses the UTC calendar date portion of ISO time.
 - `dateTimeMs`, `dateTime`, `time`, `compactDateTime`, `compactDate`, and `date` use the local machine time zone.
+- Invalid configured values are ignored.
+- Duplicate configured values are currently kept, so repeated keys can produce repeated Quick Pick entries.
 - In the Quick Pick, the main label is a friendly name, the short description shows the config key, and the detail line shows a live preview.
 - If `timenotify.insert` resolves to one valid item, `insertNow` inserts it directly.
 - If it resolves to multiple valid items, `insertNow` shows a Quick Pick to let you choose.
@@ -194,7 +197,7 @@ Notes:
 - `TimeNotify: Show Now`
   Shows the current local time immediately.
 - `TimeNotify: Insert Current Time`
-  Inserts the current time at the cursor, or replaces the current selection. Uses the configured `timenotify.insert` formats and only prompts when more than one valid format is available.
+  Inserts the current time at the cursor, or replaces the current selection. Uses the configured `timenotify.insert` formats, inserts directly when there is one valid option, and shows a Quick Pick when there are multiple valid options.
 
 ## Development
 
