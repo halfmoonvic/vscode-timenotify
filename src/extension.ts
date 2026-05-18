@@ -3,7 +3,7 @@ import { loadConfig } from "./config";
 import {
   createInsertFormatPickItems,
   formatInsertValue,
-  shouldPromptForInsertFormat
+  shouldPromptForInsertFormat,
 } from "./insertFormats";
 import { Notifier } from "./notifier";
 import { compileEvents } from "./parser";
@@ -22,13 +22,17 @@ function setup(context: vscode.ExtensionContext): void {
   output = output ?? vscode.window.createOutputChannel("TimeNotify");
 
   clock?.dispose();
-  clock = new StatusBarClock(config.clockFormat, config.statusBarAlignment);
+  clock = new StatusBarClock(
+    config.clockFormat,
+    config.statusBarAlignment,
+    context,
+  );
   clock.start();
 
   const notifier = new Notifier();
   const { compiled, errors } = compileEvents(config.events, {
     notificationMode: config.notificationMode,
-    snoozeMinutes: config.snoozeMinutes
+    snoozeMinutes: config.snoozeMinutes,
   });
   errors.forEach((line) => output?.appendLine(`[config] ${line}`));
 
@@ -44,7 +48,7 @@ function setup(context: vscode.ExtensionContext): void {
           scheduler?.scheduleSnooze(event, event.snoozeMinutes, now);
         }
       });
-    }
+    },
   });
   scheduler.start();
 
@@ -57,15 +61,20 @@ function setup(context: vscode.ExtensionContext): void {
   context.subscriptions.push(configWatcher);
 }
 
-async function pickInsertFormat(formats: InsertFormat[]): Promise<InsertFormat | undefined> {
+async function pickInsertFormat(
+  formats: InsertFormat[],
+): Promise<InsertFormat | undefined> {
   if (!shouldPromptForInsertFormat(formats)) {
     return formats[0];
   }
 
   const now = new Date();
-  const selected = await vscode.window.showQuickPick(createInsertFormatPickItems(now, formats), {
-    placeHolder: "Select a time format to insert"
-  });
+  const selected = await vscode.window.showQuickPick(
+    createInsertFormatPickItems(now, formats),
+    {
+      placeHolder: "Select a time format to insert",
+    },
+  );
 
   return selected?.format;
 }
@@ -73,7 +82,9 @@ async function pickInsertFormat(formats: InsertFormat[]): Promise<InsertFormat |
 async function insertNow(): Promise<void> {
   const editor = vscode.window.activeTextEditor;
   if (!editor) {
-    void vscode.window.showInformationMessage("No active text editor to insert into.");
+    void vscode.window.showInformationMessage(
+      "No active text editor to insert into.",
+    );
     return;
   }
 
@@ -94,11 +105,17 @@ async function insertNow(): Promise<void> {
 export function activate(context: vscode.ExtensionContext): void {
   setup(context);
 
-  const showNowCommand = vscode.commands.registerCommand("timenotify.showNow", () => {
-    const now = new Date().toLocaleString();
-    void vscode.window.showInformationMessage(`Current time: ${now}`);
-  });
-  const insertNowCommand = vscode.commands.registerCommand("timenotify.insertNow", insertNow);
+  const showNowCommand = vscode.commands.registerCommand(
+    "timenotify.showNow",
+    () => {
+      const now = new Date().toLocaleString();
+      void vscode.window.showInformationMessage(`Current time: ${now}`);
+    },
+  );
+  const insertNowCommand = vscode.commands.registerCommand(
+    "timenotify.insertNow",
+    insertNow,
+  );
 
   context.subscriptions.push(clock!);
   context.subscriptions.push(showNowCommand, insertNowCommand);

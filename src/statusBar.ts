@@ -7,12 +7,20 @@ export class StatusBarClock implements vscode.Disposable {
   private timer: NodeJS.Timeout | undefined;
   private format: string;
 
-  constructor(format: string, alignment: StatusBarAlignmentSetting) {
+  constructor(
+    format: string,
+    alignment: StatusBarAlignmentSetting,
+    context: vscode.ExtensionContext,
+  ) {
     this.item = vscode.window.createStatusBarItem(
-      alignment === "left" ? vscode.StatusBarAlignment.Left : vscode.StatusBarAlignment.Right,
-      100
+      alignment === "left"
+        ? vscode.StatusBarAlignment.Left
+        : vscode.StatusBarAlignment.Right,
+      100,
     );
-    this.item.name = "TimeNotify";
+    const { name, displayName } = context.extension.packageJSON;
+    this.item.name = name;
+    this.item.tooltip = displayName;
     this.item.show();
     this.format = format;
   }
@@ -30,7 +38,6 @@ export class StatusBarClock implements vscode.Disposable {
 
   update(now = new Date()): void {
     this.item.text = `$(clock) ${formatClock(now, this.format)}`;
-    this.item.tooltip = "TimeNotify";
   }
 
   stop(): void {
